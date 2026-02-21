@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuat | Kişisel Site</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- CryptoJS Kütüphanesi (şifreleme için) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Ana Site Stilleri */
+        .site-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 15px 30px;
+            margin-bottom: 40px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .admin-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .admin-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Profil Bölümü */
+        .profile {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid white;
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        .profile h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .profile .title {
+            font-size: 20px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            background: gold;
+            color: #333;
+            padding: 5px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        /* Kart Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffd700;
+        }
+
+        .card p {
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        /* Sosyal Medya */
+        .social-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .social-link {
+            flex: 1;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 30px;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .social-link:hover {
+            transform: scale(1.05);
+        }
+
+        .instagram { background: linear-gradient(45deg, #f09433, #d62976, #962fbf); }
+        .whatsapp { background: #25D366; }
+        .telegram { background: #0088cc; }
+
+        /* Yetenek Çubukları */
+        .skill-item {
+            margin-bottom: 15px;
+        }
+
+        .skill-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .skill-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffaa00);
+            border-radius: 10px;
+        }
+
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #16213e;
+            padding: 40px;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid #ffd700;
+        }
+
+        .modal-content h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #1a1a2e;
+            border: 1px solid #ffd700;
+            border-radius: 30px;
+            color: white;
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 15px;
+            background: #ffd700;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .modal-content .hata {
+            color: #ff4444;
+            text-align: center;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a2e;
+            overflow-y: auto;
+            padding: 20px;
+            z-index: 1001;
+        }
+
+        .admin-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #16213e;
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .admin-container h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .admin-container input,
+        .admin-container textarea,
+        .admin-container select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #1a1a2e;
+            border: 1px solid #ffd700;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .admin-container button {
+            background: #ffd700;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .admin-container .cikis-btn {
+            background: #ff4444;
+            color: white;
+        }
+
+        .skill-list-item {
+            background: #1a1a2e;
+            border: 1px solid #ffd700;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .remove-skill {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- ANA SİTE -->
+    <div class="site-container" id="siteContainer">
+        <header>
+            <div class="logo">FUAT ✦</div>
+            <button class="admin-btn" onclick="openModal()">Admin Girişi</button>
+        </header>
+
+        <div class="profile">
+            <img id="profileImg" src="https://via.placeholder.com/150" alt="Profil" class="profile-img">
+            <h1 id="siteName">Fuat</h1>
+            <div class="title" id="siteTitle">Full Stack Developer | Ankara</div>
+            <div class="badge" id="siteBadge">Gold</div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3><i class="fas fa-user"></i> Hakkımda</h3>
+                <p id="aboutText">Merhaba! Ben Fuat. Ankara'da yaşıyorum ve yazılım geliştirme ile ilgileniyorum. Python, yapay zeka ve web geliştirme konularında çalışıyorum.</p>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-code-branch"></i> Projeler</h3>
+                <p id="projectsText">• Python AI Projeleri<br>• Web Uygulamaları<br>• Mobil Uygulamalar</p>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-bullseye"></i> Hedefler</h3>
+                <p id="goalsText">• Yapay Zeka'da uzmanlaşmak<br>• Kendi startup'ımı kurmak<br>• Yurtdışında çalışmak</p>
+            </div>
+        </div>
+
+        <!-- Sosyal Medya Kartı -->
+        <div class="card" style="margin-bottom: 30px;">
+            <h3><i class="fas fa-share-alt"></i> Sosyal Medya</h3>
+            <div class="social-links" id="socialLinks"></div>
+        </div>
+
+        <!-- Yetenekler Kartı -->
+        <div class="card">
+            <h3><i class="fas fa-chart-line"></i> Yetenekler</h3>
+            <div id="skillsContainer"></div>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2>Admin Girişi</h2>
+            <input type="text" id="username" placeholder="Kullanıcı Adı">
+            <input type="password" id="password" placeholder="Şifre">
+            <button onclick="login()">Giriş Yap</button>
+            <div class="hata" id="loginError"></div>
+        </div>
+    </div>
+
+    <!-- ADMIN PANELİ -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-container">
+            <h2>⚡ Admin Paneli</h2>
+            
+            <h3>🖼️ Profil Resmi</h3>
+            <input type="text" id="editProfileImage" placeholder="Profil resmi URL'si">
+
+            <h3>📝 Genel Bilgiler</h3>
+            <input type="text" id="editName" placeholder="İsim">
+            <input type="text" id="editTitle" placeholder="Ünvan">
+            <select id="editBadge">
+                <option>Bronz</option>
+                <option>Silver</option>
+                <option>Gold</option>
+                <option>Platinum</option>
+                <option>Diamond</option>
+            </select>
+            <textarea id="editAbout" placeholder="Hakkımda" rows="3"></textarea>
+            <textarea id="editProjects" placeholder="Projeler (her satıra bir tane)" rows="3"></textarea>
+            <textarea id="editGoals" placeholder="Hedefler (her satıra bir tane)" rows="3"></textarea>
+
+            <h3>🌐 Sosyal Medya</h3>
+            <input type="text" id="editInstagram" placeholder="Instagram kullanıcı adı">
+            <input type="text" id="editWhatsapp" placeholder="WhatsApp numarası">
+            <input type="text" id="editTelegram" placeholder="Telegram kullanıcı adı">
+
+            <h3>⚙️ Yetenekler</h3>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="skillName" placeholder="Yetenek adı" style="flex:2">
+                <input type="number" id="skillLevel" placeholder="Seviye (1-100)" style="flex:1" min="1" max="100">
+                <button onclick="addSkill()">Ekle</button>
+            </div>
+            <div id="skillList"></div>
+
+            <div style="margin-top: 20px;">
+                <button onclick="saveAll()">💾 Tümünü Kaydet</button>
+                <button class="cikis-btn" onclick="logout()">Çıkış Yap</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MD5 ŞİFRELEME FONKSİYONU
+        function md5(string) {
+            return CryptoJS.MD5(string).toString();
+        }
+
+        // GİZLİ ŞİFRE (fuat2010)
+        const gizliSifre = "5f4dcc3b5aa765d61d8327deb882cf99";
+
+        // VERİLER
+        let skills = [];
+
+        // SAYFA YÜKLENİNCE VERİLERİ YÜKLE
+        window.onload = function() {
+            loadFromStorage();
+            renderSkills();
+            renderSocialLinks();
+        };
+
+        // MODAL AÇ
+        function openModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        // GİRİŞ YAP (ŞİFRE GİZLİ)
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const error = document.getElementById('loginError');
+
+            // Kullanıcı: fuat, Şifre: fuat2010 (gizli)
+            if (username === 'fuat' && md5(password) === gizliSifre) {
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('siteContainer').style.display = 'none';
+                loadToPanel();
+                updateSkillList();
+                error.innerText = '';
+            } else {
+                // SADECE HATA MESAJI, ŞİFRE GÖRÜNMEZ!
+                error.innerText = '❌ Hatalı giriş';
+            }
+
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // ÇIKIŞ YAP
+        function logout() {
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('siteContainer').style.display = 'block';
+        }
+
+        // YETENEK EKLE
+        function addSkill() {
+            const name = document.getElementById('skillName').value;
+            const level = document.getElementById('skillLevel').value;
+
+            if (name && level) {
+                skills.push({ name, level });
+                updateSkillList();
+                document.getElementById('skillName').value = '';
+                document.getElementById('skillLevel').value = '';
+            }
+        }
+
+        // YETENEK SİL
+        function removeSkill(index) {
+            skills.splice(index, 1);
+            updateSkillList();
+        }
+
+        // YETENEK LİSTESİNİ GÜNCELLE (Admin panelinde)
+        function updateSkillList() {
+            const list = document.getElementById('skillList');
+            list.innerHTML = '';
+            skills.forEach((skill, index) => {
+                list.innerHTML += `
+                    <div class="skill-list-item">
+                        <span>${skill.name} - Seviye ${skill.level}</span>
+                        <button class="remove-skill" onclick="removeSkill(${index})">Sil</button>
+                    </div>
+                `;
+            });
+        }
+
+        // YETENEKLERİ GÖSTER (Ana sayfada)
+        function renderSkills() {
+            const container = document.getElementById('skillsContainer');
+            container.innerHTML = '';
+            skills.forEach(skill => {
+                container.innerHTML += `
+                    <div class="skill-item">
+                        <div class="skill-info">
+                            <span>${skill.name}</span>
+                            <span>${skill.level}%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: ${skill.level}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // SOSYAL MEDYA LİNKLERİNİ GÖSTER
+        function renderSocialLinks() {
+            const insta = localStorage.getItem('instagram') || '';
+            const wp = localStorage.getItem('whatsapp') || '';
+            const tg = localStorage.getItem('telegram') || '';
+            const container = document.getElementById('socialLinks');
+
+            container.innerHTML = '';
+
+            if (insta) {
+                container.innerHTML += `<a href="https://instagram.com/${insta}" target="_blank" class="social-link instagram"><i class="fab fa-instagram"></i> Instagram</a>`;
+            }
+            if (wp) {
+                container.innerHTML += `<a href="https://wa.me/${wp}" target="_blank" class="social-link whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>`;
+            }
+            if (tg) {
+                container.innerHTML += `<a href="https://t.me/${tg}" target="_blank" class="social-link telegram"><i class="fab fa-telegram"></i> Telegram</a>`;
+            }
+        }
+
+        // TÜM VERİLERİ KAYDET
+        function saveAll() {
+            localStorage.setItem('name', document.getElementById('editName').value);
+            localStorage.setItem('title', document.getElementById('editTitle').value);
+            localStorage.setItem('badge', document.getElementById('editBadge').value);
+            localStorage.setItem('about', document.getElementById('editAbout').value);
+            localStorage.setItem('projects', document.getElementById('editProjects').value);
+            localStorage.setItem('goals', document.getElementById('editGoals').value);
+            localStorage.setItem('profileImage', document.getElementById('editProfileImage').value);
+            localStorage.setItem('instagram', document.getElementById('editInstagram').value);
+            localStorage.setItem('whatsapp', document.getElementById('editWhatsapp').value);
+            localStorage.setItem('telegram', document.getElementById('editTelegram').value);
+            localStorage.setItem('skills', JSON.stringify(skills));
+
+            loadFromStorage();
+            renderSocialLinks();
+            alert('✅ Değişiklikler kaydedildi!');
+        }
+
+        // DEPOLADAN VERİLERİ YÜKLE
+        function loadFromStorage() {
+            document.getElementById('siteName').innerText = localStorage.getItem('name') || 'Fuat';
+            document.getElementById('siteTitle').innerText = localStorage.getItem('title') || 'Full Stack Developer | Ankara';
+            document.getElementById('siteBadge').innerText = localStorage.getItem('badge') || 'Gold';
+            document.getElementById('aboutText').innerText = localStorage.getItem('about') || 'Merhaba! Ben Fuat. Ankara\'da yaşıyorum ve yazılım geliştirme ile ilgileniyorum.';
+            document.getElementById('projectsText').innerText = localStorage.getItem('projects') || '• Python AI Projeleri\n• Web Uygulamaları\n• Mobil Uygulamalar';
+            document.getElementById('goalsText').innerText = localStorage.getItem('goals') || '• Yapay Zeka\'da uzmanlaşmak\n• Kendi startup\'ımı kurmak\n• Yurtdışında çalışmak';
+
+            const profileImg = localStorage.getItem('profileImage');
+            if (profileImg) {
+                document.getElementById('profileImg').src = profileImg;
+            }
+
+            const storedSkills = localStorage.getItem('skills');
+            if (storedSkills) {
+                skills = JSON.parse(storedSkills);
+            } else {
+                skills = [
+                    { name: 'Python', level: 90 },
+                    { name: 'JavaScript', level: 85 },
+                    { name: 'React', level: 80 },
+                    { name: 'PHP', level: 75 },
+                    { name: 'HTML/CSS', level: 95 }
+                ];
+            }
+            renderSkills();
+        }
+
+        // PANELE VERİLERİ YÜKLE
+        function loadToPanel() {
+            document.getElementById('editName').value = localStorage.getItem('name') || 'Fuat';
+            document.getElementById('editTitle').value = localStorage.getItem('title') || 'Full Stack Developer | Ankara';
+            document.getElementById('editBadge').value = localStorage.getItem('badge') || 'Gold';
+            document.getElementById('editAbout').value = localStorage.getItem('about') || 'Merhaba! Ben Fuat. Ankara\'da yaşıyorum...';
+            document.getElementById('editProjects').value = localStorage.getItem('projects') || '• Python AI Projeleri\n• Web Uygulamaları\n• Mobil Uygulamalar';
+            document.getElementById('editGoals').value = localStorage.getItem('goals') || '• Yapay Zeka\'da uzmanlaşmak\n• Kendi startup\'ımı kurmak\n• Yurtdışında çalışmak';
+            document.getElementById('editProfileImage').value = localStorage.getItem('profileImage') || '';
+            document.getElementById('editInstagram').value = localStorage.getItem('instagram') || '';
+            document.getElementById('editWhatsapp').value = localStorage.getItem('whatsapp') || '';
+            document.getElementById('editTelegram').value = localStorage.getItem('telegram') || '';
+
+            const storedSkills = localStorage.getItem('skills');
+            if (storedSkills) {
+                skills = JSON.parse(storedSkills);
+            } else {
+                skills = [
+                    { name: 'Python', level: 90 },
+                    { name: 'JavaScript', level: 85 },
+                    { name: 'React', level: 80 },
+                    { name: 'PHP', level: 75 },
+                    { name: 'HTML/CSS', level: 95 }
+                ];
+            }
+            updateSkillList();
+        }
+    </script>
+</body>
+</html>
